@@ -1,4 +1,4 @@
-# CAHUB Auto — Department Workflow & Technology Survey
+# HLMIC — Department Workflow & Technology Survey
 
 A multilingual, self-hosted survey form that collects department workflow insights and emails the filled document plus an auto-generated report summary.
 
@@ -51,4 +51,4 @@ git push origin main
 
 ## License
 
-Proprietary — CAHUB Auto internal use.
+Proprietary — HLMIC internal use.
