@@ -3,318 +3,1121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Department Workflow &amp; Technology Survey</title>
+<title>CAHUB Auto — Dept Workflow Survey</title>
 <style>
   :root {
-    --primary: #1a4b84;
-    --primary-dark: #12345e;
-    --accent: #2e9e6b;
-    --bg: #f4f6f9;
-    --card: #ffffff;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --border: #d7dce3;
-    --danger: #b3261e;
+    --accent1: #22d3ee;
+    --accent2: #6366f1;
+    --accent3: #a855f7;
+    --bg0: #0b1020;
+    --bg1: #101731;
+    --card: rgba(255,255,255,.055);
+    --card-border: rgba(255,255,255,.12);
+    --text: #e8ecf8;
+    --muted: #8b93ab;
+    --glass: rgba(255,255,255,.04);
+    --danger: #fb7185;
+    --ok: #34d399;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
+    background: var(--bg0);
     color: var(--text);
     line-height: 1.55;
-    padding: 24px 16px 64px;
+    min-height: 100vh;
+    padding: 28px 16px 72px;
+    position: relative;
+    overflow-x: hidden;
   }
-  .wrap { max-width: 780px; margin: 0 auto; }
+  body::before, body::after {
+    content: "";
+    position: fixed; border-radius: 50%; filter: blur(90px); z-index: 0; pointer-events: none;
+  }
+  body::before { width: 480px; height: 480px; background: rgba(34,211,238,.16); top: -160px; left: -120px; }
+  body::after { width: 520px; height: 520px; background: rgba(168,85,247,.14); bottom: -200px; right: -140px; }
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+  .wrap { max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* Header */
   header.hero {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: #fff;
-    border-radius: 12px;
-    padding: 28px 28px 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 14px rgba(18,52,94,.25);
+    background: linear-gradient(135deg, rgba(34,211,238,.12), rgba(99,102,241,.12), rgba(168,85,247,.12));
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 26px 28px 22px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
   }
-  header.hero h1 { font-size: 1.45rem; margin-bottom: 6px; letter-spacing: .3px; }
-  header.hero p { font-size: .95rem; opacity: .92; }
+  .top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .badge {
-    display: inline-block; background: rgba(255,255,255,.16);
-    border: 1px solid rgba(255,255,255,.35); border-radius: 999px;
-    padding: 2px 10px; font-size: .75rem; margin-bottom: 12px;
-    letter-spacing: .5px; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(34,211,238,.12); border: 1px solid rgba(34,211,238,.35);
+    color: var(--accent1); border-radius: 999px;
+    padding: 4px 12px; font-size: .72rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; font-family: "SFMono-Regular", Menlo, monospace;
   }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent1); box-shadow: 0 0 10px var(--accent1); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .controls { display: flex; gap: 10px; align-items: center; }
+  .controls select, .controls button {
+    padding: 8px 12px; font-size: .85rem; font-weight: 600;
+    border: 1px solid var(--card-border); border-radius: 10px;
+    background: var(--glass); color: var(--text); font-family: inherit;
+    cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .controls button:hover, .controls select:hover { border-color: rgba(34,211,238,.5); }
+  header.hero h1 {
+    font-size: 1.5rem; letter-spacing: .3px; margin: 16px 0 6px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+  header.hero .sub { font-size: .95rem; opacity: .85; max-width: 640px; }
+  .hud {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--card-border);
+    font-size: .78rem; color: var(--muted); font-family: "SFMono-Regular", Menlo, monospace;
+  }
+  .hud .autosave { display: inline-flex; align-items: center; gap: 6px; }
+  .hud .autosave.off .dot, .hud .autosave.on .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .hud .autosave.on .dot { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .hud .autosave.off .dot { background: var(--muted); }
+
+  /* Step progress */
+  .stepper { display: flex; gap: 6px; margin: 4px 0 22px; }
+  .step-node { flex: 1; position: relative; }
+  .step-node .bar { height: 4px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; }
+  .step-node .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent1), var(--accent2)); border-radius: 999px; transition: width .4s ease; }
+  .step-node .lbl { font-size: .62rem; color: var(--muted); margin-top: 6px; letter-spacing: .03em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .step-node.done .bar i { width: 100%; }
+  .step-node.cur .lbl { color: var(--accent1); }
+  .step-node.done .lbl { color: var(--ok); }
+  .step-node.cur .bar i { width: 50%; }
+
+  /* Card + steps */
   .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px 22px; margin-bottom: 16px;
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 22px 24px; margin-bottom: 14px;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
   }
-  .card h2 { font-size: 1.05rem; color: var(--primary); margin-bottom: 10px; }
+  .step { display: none; }
+  .step.active { display: block; animation: fadeUp .38s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .step-num {
+    width: 34px; height: 34px; flex: none; display: grid; place-items: center;
+    border-radius: 10px; font-weight: 800; font-size: .95rem;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: #04121f; box-shadow: 0 4px 14px rgba(34,211,238,.35);
+  }
+  .step-title { font-size: 1.08rem; font-weight: 800; letter-spacing: .2px; }
+  .step-sub { font-size: .8rem; color: var(--muted); }
+  .q-title { font-size: .98rem; font-weight: 700; color: var(--text); margin: 4px 0 8px; line-height: 1.45; }
   label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .95rem; }
-  label .opt { font-weight: 400; color: var(--muted); font-size: .82rem; display: block; margin-top: 2px; }
+  label .opt { font-weight: 400; color: var(--muted); font-size: .82rem; display: block; margin-top: 2px; line-height: 1.45; }
   input[type="text"], input[type="email"], textarea {
-    width: 100%; padding: 10px 12px; font-size: .95rem;
-    border: 1px solid var(--border); border-radius: 8px;
-    background: #fbfcfe; font-family: inherit; color: var(--text);
+    width: 100%; padding: 11px 13px; font-size: .95rem;
+    border: 1px solid var(--card-border); border-radius: 11px;
+    background: rgba(0,0,0,.25); color: var(--text); font-family: inherit;
+    transition: border-color .2s, box-shadow .2s;
   }
   input:focus, textarea:focus {
-    outline: 2px solid rgba(26,75,132,.4); border-color: var(--primary);
+    outline: none; border-color: rgba(34,211,238,.6);
+    box-shadow: 0 0 0 3px rgba(34,211,238,.15);
   }
-  textarea { min-height: 96px; resize: vertical; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
-  .radio-group { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
-  .radio-group label { display: flex; align-items: center; gap: 7px; font-weight: 500; font-size: .92rem; margin: 0; cursor: pointer; }
-  .radio-group input[type="radio"] { accent-color: var(--primary); width: 17px; height: 17px; }
-  .hint { font-size: .82rem; color: var(--muted); margin-top: 4px; }
-  .req { color: var(--danger); }
-  .progress-wrap { margin-bottom: 22px; }
-  .progress-bar { height: 8px; background: #e3e8ef; border-radius: 999px; overflow: hidden; }
-  .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width .3s ease; border-radius: 999px; }
-  .progress-text { font-size: .8rem; color: var(--muted); margin-top: 6px; text-align: right; }
-  button[type="submit"] {
-    display: block; width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 700;
-    background: var(--accent); color: #fff; border: none; border-radius: 10px;
-    cursor: pointer; letter-spacing: .3px; box-shadow: 0 3px 10px rgba(46,158,107,.35);
-  }
-  button[type="submit"]:hover { background: #268a5c; }
-  button[type="submit"]:disabled { background: #9fb9ad; cursor: not-allowed; box-shadow: none; }
-  .status { margin-top: 14px; padding: 12px 14px; border-radius: 8px; display: none; font-size: .92rem; }
-  .status.success { display: block; background: #e6f4ec; color: #155c3a; border: 1px solid #b7dfc8; }
-  .status.error { display: block; background: #fdecea; color: #8c1d18; border: 1px solid #f5c6c0; }
-  footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 28px; }
+  textarea { min-height: 92px; resize: vertical; }
+  .field-meta { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); margin-top: 5px; font-family: "SFMono-Regular", Menlo, monospace; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
+  @media (max-width: 620px) { .two { grid-template-columns: 1fr; } .step-node .lbl { display: none; } }
+  .spacer { height: 16px; }
+  .req { color: var(--danger); }
+
+  /* Radio */
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 12px; }
+  .radio-chip {
+    position: relative; cursor: pointer;
+  }
+  .radio-chip input { position: absolute; opacity: 0; }
+  .radio-chip span {
+    display: inline-block; padding: 9px 18px; border-radius: 999px;
+    border: 1px solid var(--card-border); background: var(--glass);
+    font-size: .9rem; font-weight: 600; transition: all .18s ease;
+  }
+  .radio-chip:hover span { border-color: rgba(34,211,238,.5); }
+  .radio-chip input:checked + span {
+    background: linear-gradient(135deg, rgba(34,211,238,.2), rgba(99,102,241,.2));
+    border-color: rgba(34,211,238,.7); color: var(--accent1);
+    box-shadow: 0 0 14px rgba(34,211,238,.25);
+  }
+
+  /* Nav buttons */
+  .nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; }
+  .nav button {
+    padding: 13px 22px; font-size: .95rem; font-weight: 700; font-family: inherit;
+    border-radius: 12px; cursor: pointer; transition: all .18s ease;
+    border: 1px solid var(--card-border); background: var(--glass); color: var(--text);
+  }
+  .nav button.primary {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+    color: #04121f; border: none; box-shadow: 0 6px 20px rgba(99,102,241,.4);
+  }
+  .nav button.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(99,102,241,.5); }
+  .nav button:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+  .nav button.ghost { opacity: .8; }
+  .nav button.ghost:hover { opacity: 1; border-color: rgba(34,211,238,.5); }
+
+  /* Insights */
+  .insights { display: none; }
+  .insights.active { display: block; }
+  .insights .hd { display: flex; align-items: center; gap: 8px; font-size: .85rem; font-weight: 700; color: var(--accent1); }
+  .insights .hd .spark { animation: pulse 1.6s infinite; }
+  .insights .hint { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+  .insights .cats { display: grid; gap: 10px; margin-top: 12px; }
+  .insights .cat { font-size: .78rem; }
+  .insights .cat .cat-name { color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; font-size: .7rem; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    padding: 4px 11px; border-radius: 999px; font-size: .76rem; font-weight: 600;
+    border: 1px solid rgba(34,211,238,.4); background: rgba(34,211,238,.1); color: var(--accent1);
+    animation: fadeUp .25s ease;
+  }
+  .chip.pain { border-color: rgba(251,113,133,.4); background: rgba(251,113,133,.1); color: var(--danger); }
+  .chip.opp { border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.1); color: var(--ok); }
+  .chip-none { font-size: .76rem; color: var(--muted); font-style: italic; }
+
+  /* Review */
+  #reviewReport {
+    width: 100%; min-height: 340px; white-space: pre-wrap; word-break: break-word;
+    font-family: "SFMono-Regular", Menlo, monospace; font-size: .78rem; line-height: 1.5;
+    padding: 16px; border-radius: 12px; border: 1px solid var(--card-border);
+    background: rgba(0,0,0,.35); color: #c8d3ec; resize: vertical;
+  }
+
+  /* Status */
+  .status { margin-top: 14px; padding: 14px 16px; border-radius: 12px; display: none; font-size: .92rem; }
+  .status.success { display: block; background: rgba(52,211,153,.12); color: var(--ok); border: 1px solid rgba(52,211,153,.4); }
+  .status.error { display: block; background: rgba(251,113,133,.12); color: var(--danger); border: 1px solid rgba(251,113,133,.4); }
+  .check-big {
+    width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 30px; color: #04121f;
+    background: linear-gradient(135deg, var(--ok), var(--accent1));
+    box-shadow: 0 0 40px rgba(52,211,153,.5); animation: pop .4s ease;
+  }
+  @keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: rgba(15,23,42,.92); border: 1px solid rgba(52,211,153,.5); color: var(--ok);
+    padding: 11px 18px; border-radius: 999px; font-size: .85rem; font-weight: 600;
+    z-index: 50; opacity: 0; transition: all .3s ease; box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 30px; position: relative; z-index: 1; }
+  .kbd-hint { font-family: "SFMono-Regular", Menlo, monospace; font-size: .72rem; color: var(--muted); margin-top: 10px; text-align: center; position: relative; z-index: 1; }
+  .kbd-hint kbd { background: rgba(255,255,255,.08); border: 1px solid var(--card-border); border-radius: 5px; padding: 1px 6px; font-family: inherit; }
 </style>
 </head>
 <body>
+<div class="grid-bg"></div>
 <div class="wrap">
 
   <header class="hero">
-    <span class="badge">CAHUB Auto</span>
-    <h1>Department Workflow &amp; Technology Survey</h1>
-    <p>Help us understand how your department works today so we can make things faster, simpler, and less manual.</p>
+    <div class="top-row">
+      <span class="badge"><span class="dot"></span> CAHUB Auto · Digital Transformation</span>
+      <div class="controls">
+        <select id="langSelect" title="Language / Idioma / Ngôn ngữ">
+          <option value="en">EN</option>
+          <option value="pt">PT</option>
+          <option value="vi">VI</option>
+        </select>
+        <button id="resetBtn" data-i18n="resetBtn" type="button">Reset</button>
+      </div>
+    </div>
+    <h1 data-i18n="title">Department Workflow &amp; Technology Survey</h1>
+    <p class="sub" data-i18n="subtitle">Help us understand how your department works today so we can make things faster, simpler, and less manual.</p>
+    <div class="hud">
+      <span class="autosave on" id="autosaveHud"><span class="dot"></span> <span data-i18n="autosaveText">Auto-saved</span></span>
+      <span id="globalProgress">0%</span>
+    </div>
   </header>
 
+  <div class="stepper" id="stepper"></div>
+
   <form id="surveyForm" novalidate>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-text" id="progressText">0% complete</div>
-    </div>
 
-    <div class="card">
-      <div class="two">
-        <div>
-          <label for="department">Department <span class="req">*</span></label>
-          <input type="text" id="department" name="department" required placeholder="e.g. Sales, HR, Finance">
+    <!-- Step 0 -->
+    <section class="step" data-step="0">
+      <div class="card">
+        <div class="step-head"><span class="step-num">01</span><div><div class="step-title" data-i18n="s0_title">About you</div><div class="step-sub" data-i18n="s0_sub">A few basics so we can route your answers.</div></div></div>
+        <div class="two">
+          <div>
+            <label for="department" data-i18n="department">Department <span class="req">*</span></label>
+            <input type="text" id="department" name="department" required data-i18n-placeholder="dept_ph">
+          </div>
+          <div>
+            <label for="name_role" data-i18n="name_role">Name / Role <span class="req">*</span></label>
+            <input type="text" id="name_role" name="name_role" required data-i18n-placeholder="name_role_ph">
+          </div>
         </div>
-        <div>
-          <label for="name_role">Name / Role <span class="req">*</span></label>
-          <input type="text" id="name_role" name="name_role" required placeholder="e.g. Maria Gomez — Buyer">
+        <div class="spacer"></div>
+        <div class="q-title" data-i18n="q1_title">1. What are your main day-to-day tasks or workflows?</div>
+        <textarea name="q1" id="q1" data-i18n-placeholder="q1_ph"></textarea>
+        <div class="field-meta"><span data-i18n="countWords">words</span><span id="c_q1"></span></div>
+      </div>
+    </section>
+
+    <!-- Step 1 -->
+    <section class="step" data-step="1">
+      <div class="card">
+        <div class="step-head"><span class="step-num">02</span><div><div class="step-title" data-i18n="s1_title">Tools &amp; time</div><div class="step-sub" data-i18n="s1_sub">What runs your day-to-day.</div></div></div>
+        <div class="q-title" data-i18n="q2_title">2. What apps, software, systems, or tools do you currently use to do your work?</div>
+        <label class="opt" data-i18n="q2_opt">Include spreadsheets, internal systems, communication tools, websites, or other applications. Examples: Excel, Outlook, Teams, WhatsApp, ERP/accounting systems, Google Drive, etc.</label>
+        <textarea name="q2" id="q2" data-i18n-placeholder="q2_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q2"></span></div>
+        <div class="spacer"></div>
+        <div class="q-title" data-i18n="q3_title">3. Which tasks take the most time?</div>
+        <textarea name="q3" id="q3" data-i18n-placeholder="q3_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q3"></span></div>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="step" data-step="2">
+      <div class="card">
+        <div class="step-head"><span class="step-num">03</span><div><div class="step-title" data-i18n="s2_title">Pain points</div><div class="step-sub" data-i18n="s2_sub">What's frustrating about today.</div></div></div>
+        <div class="q-title" data-i18n="q4_title">4. What are the biggest problems or frustrations in your current workflow?</div>
+        <textarea name="q4" id="q4" data-i18n-placeholder="q4_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q4"></span></div>
+        <div class="spacer"></div>
+        <div class="q-title" data-i18n="q5_title">5. Which tasks are repetitive or involve a lot of manual work?</div>
+        <textarea name="q5" id="q5" data-i18n-placeholder="q5_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q5"></span></div>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="step" data-step="3">
+      <div class="card">
+        <div class="step-head"><span class="step-num">04</span><div><div class="step-title" data-i18n="s3_title">Data entry</div><div class="step-sub" data-i18n="s3_sub">The duplicate-work signal.</div></div></div>
+        <div class="q-title" data-i18n="q6_title">6. Do you enter the same information more than once or manually move information between different apps, spreadsheets, emails, or systems?</div>
+        <div class="radio-group">
+          <label class="radio-chip"><input type="radio" name="q6" value="Yes" required><span data-i18n="yes">Yes</span></label>
+          <label class="radio-chip"><input type="radio" name="q6" value="No"><span data-i18n="no">No</span></label>
+          <label class="radio-chip"><input type="radio" name="q6" value="Sometimes"><span data-i18n="sometimes">Sometimes</span></label>
+        </div>
+        <div class="hint" data-i18n="q6_example_label" style="font-size:.82rem;color:var(--muted);margin-bottom:6px;">If yes, please give an example:</div>
+        <textarea name="q6_example" id="q6_example" data-i18n-placeholder="q6_example_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q6_example"></span></div>
+      </div>
+    </section>
+
+    <!-- Step 4 -->
+    <section class="step" data-step="4">
+      <div class="card">
+        <div class="step-head"><span class="step-num">05</span><div><div class="step-title" data-i18n="s4_title">Bottlenecks &amp; automation</div><div class="step-sub" data-i18n="s4_sub">Where work stalls and what could run itself.</div></div></div>
+        <div class="q-title" data-i18n="q7_title">7. Where do delays or bottlenecks usually happen?</div>
+        <textarea name="q7" id="q7" data-i18n-placeholder="q7_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q7"></span></div>
+        <div class="spacer"></div>
+        <div class="q-title" data-i18n="q8_title">8. If you could automate or simplify one task, what would it be?</div>
+        <textarea name="q8" id="q8" data-i18n-placeholder="q8_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q8"></span></div>
+      </div>
+    </section>
+
+    <!-- Step 5 -->
+    <section class="step" data-step="5">
+      <div class="card">
+        <div class="step-head"><span class="step-num">06</span><div><div class="step-title" data-i18n="s5_title">Digital &amp; priorities</div><div class="step-sub" data-i18n="s5_sub">The highest-leverage wins.</div></div></div>
+        <div class="q-title" data-i18n="q9_title">9. Is there any process that should be digital or better supported by technology?</div>
+        <textarea name="q9" id="q9" data-i18n-placeholder="q9_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q9"></span></div>
+        <div class="spacer"></div>
+        <div class="q-title" data-i18n="q10_title">10. What ONE improvement would make the biggest difference to your department?</div>
+        <textarea name="q10" id="q10" data-i18n-placeholder="q10_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q10"></span></div>
+        <div class="spacer"></div>
+        <div class="q-title" data-i18n="q11_title">11. Anything else that could make your work faster, easier, or more efficient?</div>
+        <textarea name="q11" id="q11" data-i18n-placeholder="q11_ph"></textarea>
+        <div class="field-meta"><span></span><span id="c_q11"></span></div>
+      </div>
+    </section>
+
+    <!-- Step 6 -->
+    <section class="step" data-step="6">
+      <div class="card">
+        <div class="step-head"><span class="step-num">07</span><div><div class="step-title" data-i18n="s6_title">Review &amp; submit</div><div class="step-sub" data-i18n="s6_sub">Your filled document + auto-generated report.</div></div></div>
+        <div class="q-title" data-i18n="reviewHint">Filled document + auto-generated report</div>
+        <textarea id="reviewReport" readonly></textarea>
+        <div class="nav" style="margin-top:14px;">
+          <button type="button" class="ghost" id="editBtn" data-i18n="editBtn">Edit answers</button>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="ghost" id="copyBtn" data-i18n="copyBtn">Copy</button>
+            <button type="button" class="ghost" id="downloadBtn" data-i18n="downloadBtn">Download .txt</button>
+          </div>
         </div>
       </div>
+    </section>
+
+    <div class="card insights" id="insights">
+      <div class="hd"><span class="spark">✦</span> <span data-i18n="insightsTitle">Live insights</span></div>
+      <div class="hint" data-i18n="insightsHint">Auto-detected as you type — patterns the team will care about.</div>
+      <div class="cats" id="insightsCats"></div>
     </div>
 
-    <div class="card">
-      <h2>1. What are your main day-to-day tasks or workflows?</h2>
-      <textarea name="q1" id="q1" placeholder="List the main things you do on a typical day..."></textarea>
+    <div class="nav">
+      <button type="button" class="ghost" id="backBtn" data-i18n="back">Back</button>
+      <button type="button" class="primary" id="nextBtn" data-i18n="next">Next</button>
+      <button type="submit" class="primary" id="submitBtn" data-i18n="finish" style="display:none;">Finish &amp; Submit</button>
     </div>
 
-    <div class="card">
-      <h2>2. What apps, software, systems, or tools do you currently use to do your work?</h2>
-      <label class="opt">Include spreadsheets, internal systems, communication tools, websites, or other applications. Examples: Excel, Outlook, Teams, WhatsApp, ERP/accounting systems, Google Drive, etc.</label>
-      <textarea name="q2" id="q2" placeholder="e.g. Excel, Outlook, Teams, SAP, Google Drive..."></textarea>
-    </div>
-
-    <div class="card">
-      <h2>3. Which tasks take the most time?</h2>
-      <textarea name="q3" id="q3" placeholder="Where does most of your time go?"></textarea>
-    </div>
-
-    <div class="card">
-      <h2>4. What are the biggest problems or frustrations in your current workflow?</h2>
-      <textarea name="q4" id="q4" placeholder="What slows you down or annoys you most?"></textarea>
-    </div>
-
-    <div class="card">
-      <h2>5. Which tasks are repetitive or involve a lot of manual work?</h2>
-      <textarea name="q5" id="q5" placeholder="e.g. re-typing data, copying between systems, filling forms..."></textarea>
-    </div>
-
-    <div class="card">
-      <h2>6. Do you enter the same information more than once or manually move information between different apps, spreadsheets, emails, or systems?</h2>
-      <div class="radio-group" id="q6group">
-        <label><input type="radio" name="q6" value="Yes" required> Yes</label>
-        <label><input type="radio" name="q6" value="No"> No</label>
-        <label><input type="radio" name="q6" value="Sometimes"> Sometimes</label>
-      </div>
-      <div class="hint">If yes, please give an example:</div>
-      <textarea name="q6_example" id="q6_example" placeholder="e.g. I type the same order details into both the web portal and Excel every day..."></textarea>
-    </div>
-
-    <div class="card">
-      <h2>7. Where do delays or bottlenecks usually happen?</h2>
-      <textarea name="q7" id="q7" placeholder="Where does work get stuck or wait?"></textarea>
-    </div>
-
-    <div class="card">
-      <h2>8. If you could automate or simplify one task, what would it be?</h2>
-      <textarea name="q8" id="q8" placeholder="The one thing you'd love to never do by hand again..."></textarea>
-    </div>
-
-    <div class="card">
-      <h2>9. Is there any process that should be digital or better supported by technology?</h2>
-      <textarea name="q9" id="q9" placeholder="Any paper process, phone call, or manual step that could be digital?"></textarea>
-    </div>
-
-    <div class="card">
-      <h2>10. What ONE improvement would make the biggest difference to your department?</h2>
-      <textarea name="q10" id="q10" placeholder="If we could only fix one thing..."></textarea>
-    </div>
-
-    <div class="card">
-      <h2>11. Anything else that could make your work faster, easier, or more efficient?</h2>
-      <textarea name="q11" id="q11" placeholder="Anything else you'd like us to know?"></textarea>
-    </div>
-
-    <button type="submit" id="submitBtn">Finish &amp; Submit</button>
     <div class="status" id="statusBox"></div>
   </form>
 
-  <footer>Your response is sent to the digital transformation team. Thank you for your time.</footer>
+  <footer data-i18n="footer">Your response is sent to the digital transformation team. Thank you for your time.</footer>
+  <div class="kbd-hint" data-kbd="kbdHint"></div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 (function () {
-  const form = document.getElementById('surveyForm');
-  const btn = document.getElementById('submitBtn');
-  const statusBox = document.getElementById('statusBox');
-  const fill = document.getElementById('progressFill');
-  const progressText = document.getElementById('progressText');
+  'use strict';
 
-  const FIELDS = ['department','name_role','q1','q2','q3','q4','q5','q6','q6_example','q7','q8','q9','q10','q11'];
+  var I18N = {
+    en: {
+      title: "Department Workflow & Technology Survey",
+      subtitle: "Help us understand how your department works today so we can make things faster, simpler, and less manual.",
+      resetBtn: "Reset",
+      resetConfirm: "Reset all answers?",
+      autosaveText: "Auto-saved",
+      department: "Department *",
+      name_role: "Name / Role *",
+      dept_ph: "e.g. Sales, HR, Finance",
+      name_role_ph: "e.g. Maria Gomez — Buyer",
+      s0_title: "About you",
+      s0_sub: "A few basics so we can route your answers.",
+      s1_title: "Tools & time",
+      s1_sub: "What runs your day-to-day.",
+      s2_title: "Pain points",
+      s2_sub: "What's frustrating about today.",
+      s3_title: "Data entry",
+      s3_sub: "The duplicate-work signal.",
+      s4_title: "Bottlenecks & automation",
+      s4_sub: "Where work stalls and what could run itself.",
+      s5_title: "Digital & priorities",
+      s5_sub: "The highest-leverage wins.",
+      s6_title: "Review & submit",
+      s6_sub: "Your filled document + auto-generated report.",
+      reviewHint: "Your filled document + auto-generated report, ready to send.",
+      q1_title: "1. What are your main day-to-day tasks or workflows?",
+      q1_ph: "List the main things you do on a typical day...",
+      q2_title: "2. What apps, software, systems, or tools do you currently use to do your work?",
+      q2_opt: "Include spreadsheets, internal systems, communication tools, websites, or other applications. Examples: Excel, Outlook, Teams, WhatsApp, ERP/accounting systems, Google Drive, etc.",
+      q2_ph: "e.g. Excel, Outlook, Teams, SAP, Google Drive...",
+      q3_title: "3. Which tasks take the most time?",
+      q3_ph: "Where does most of your time go?",
+      q4_title: "4. What are the biggest problems or frustrations in your current workflow?",
+      q4_ph: "What slows you down or annoys you most?",
+      q5_title: "5. Which tasks are repetitive or involve a lot of manual work?",
+      q5_ph: "e.g. re-typing data, copying between systems, filling forms...",
+      q6_title: "6. Do you enter the same information more than once or manually move information between different apps, spreadsheets, emails, or systems?",
+      yes: "Yes", no: "No", sometimes: "Sometimes",
+      q6_example_label: "If yes, please give an example:",
+      q6_example_ph: "e.g. I type the same order details into both the web portal and Excel every day...",
+      q7_title: "7. Where do delays or bottlenecks usually happen?",
+      q7_ph: "Where does work get stuck or wait?",
+      q8_title: "8. If you could automate or simplify one task, what would it be?",
+      q8_ph: "The one thing you'd love to never do by hand again...",
+      q9_title: "9. Is there any process that should be digital or better supported by technology?",
+      q9_ph: "Any paper process, phone call, or manual step that could be digital?",
+      q10_title: "10. What ONE improvement would make the biggest difference to your department?",
+      q10_ph: "If we could only fix one thing...",
+      q11_title: "11. Anything else that could make your work faster, easier, or more efficient?",
+      q11_ph: "Anything else you'd like us to know?",
+      finish: "Finish & Submit",
+      back: "Back",
+      next: "Next",
+      editBtn: "Edit answers",
+      copyBtn: "Copy report",
+      downloadBtn: "Download .txt",
+      insightsTitle: "Live insights",
+      insightsHint: "Auto-detected as you type — patterns the team will care about.",
+      insightsEmpty: "Start typing… I'll flag tools, pain signals, and automation opportunities.",
+      catTools: "Tools detected",
+      catPain: "Pain signals",
+      catOpp: "Automation opportunities",
+      footer: "Your response is sent to the digital transformation team. Thank you for your time.",
+      progress: "{pct}% complete",
+      sending: "Sending…",
+      error_required: "Please complete the required fields: Department, Name / Role, and Question 6.",
+      success: "Thank you! Your response has been sent.",
+      success_note: "If this is the first submission, the team will receive an activation email from FormSubmit — they'll confirm once and all future responses arrive automatically.",
+      error_send: "Something went wrong sending your response. Please try again in a moment.",
+      savedToast: "Draft restored — continue where you left off.",
+      clearedToast: "Draft cleared.",
+      copiedToast: "Report copied to clipboard.",
+      countWords: "words",
+      kbdHint: "Tip: use ← → to navigate, Ctrl+Enter to continue",
+      steps: ["About you", "Tools & time", "Pain points", "Data entry", "Bottlenecks", "Priorities", "Review"],
+      r: {
+        title: "DEPARTMENT WORKFLOW SURVEY REPORT",
+        dept: "Department", nameRole: "Name / Role", submitted: "Submitted",
+        snapshot: "QUICK SNAPSHOT", reenters: "Re-enters / manually moves data", example: "Example",
+        repetitive: "Repetitive/manual tasks mentioned", automCandidate: "Automation candidate",
+        topImprovement: "Top improvement request", biggestFrustration: "Biggest frustration",
+        bottleneck: "Bottleneck location", toolsHeader: "TOOLS IN USE", timeSinksHeader: "TOP TIME SINKS",
+        digitalizationHeader: "DIGITALIZATION NEEDS", feedbackHeader: "OPEN FEEDBACK",
+        fullDocHeader: "FULL FILLED DOCUMENT", notgiven: "(not given)", notanswered: "(not answered)",
+        notlisted: "(not listed)", noneListed: "none listed", yes: "YES",
+        questions: [
+          "Main day-to-day tasks/workflows",
+          "Apps, software, systems or tools used",
+          "Tasks that take the most time",
+          "Biggest problems or frustrations",
+          "Repetitive / manual tasks",
+          "Same info entered more than once / manual transfer between systems",
+          "Where delays or bottlenecks usually happen",
+          "Task to automate or simplify",
+          "Process that should be digital or better supported by technology",
+          "ONE improvement that would make the biggest difference",
+          "Anything else"
+        ]
+      },
+      insight_terms: {
+        tools: [[/excel/i,'Excel'],[/google sheets/i,'Sheets'],[/google drive/i,'Drive'],[/word/i,'Word'],[/outlook/i,'Outlook'],[/teams/i,'Teams'],[/whatsapp/i,'WhatsApp'],[/slack/i,'Slack'],[/zoom/i,'Zoom'],[/\bsap\b/i,'SAP'],[/\berp\b/i,'ERP'],[/\bcrm\b/i,'CRM'],[/e-?mail/i,'Email'],[/drive/i,'Drive']],
+        pain: [[/manual/i,'Manual work'],[/cop(y|ies)|paste/i,'Copy-paste'],[/re-?type|re-?enter|re-?key/i,'Re-typing'],[/duplicat/i,'Duplication'],[/repeat/i,'Repetition'],[/slow/i,'Slow'],[/error/i,'Errors'],[/lost/i,'Lost info'],[/wait/i,'Waiting'],[/approval/i,'Approvals']],
+        opp: [[/report/i,'Reporting'],[/invoice/i,'Invoicing'],[/data entry/i,'Data entry'],[/follow-?up/i,'Follow-ups'],[/schedul/i,'Scheduling'],[/track/i,'Tracking'],[/generat/i,'Generation'],[/send/i,'Sending'],[/digit/i,'Digitalization']]
+      }
+    },
+    pt: {
+      title: "Pesquisa sobre Fluxo de Trabalho e Tecnologia do Departamento",
+      subtitle: "Ajude-nos a entender como o seu departamento trabalha hoje, para que possamos tornar tudo mais rápido, simples e menos manual.",
+      resetBtn: "Limpar",
+      resetConfirm: "Limpar todas as respostas?",
+      autosaveText: "Salvo automaticamente",
+      department: "Departamento *",
+      name_role: "Nome / Cargo *",
+      dept_ph: "ex.: Vendas, RH, Financeiro",
+      name_role_ph: "ex.: Maria Gomez — Compradora",
+      s0_title: "Sobre você",
+      s0_sub: "Alguns dados básicos para direcionar suas respostas.",
+      s1_title: "Ferramentas & tempo",
+      s1_sub: "O que movimenta o seu dia a dia.",
+      s2_title: "Pontos de dor",
+      s2_sub: "O que está frustrante hoje.",
+      s3_title: "Entrada de dados",
+      s3_sub: "O sinal do trabalho duplicado.",
+      s4_title: "Gargalos & automação",
+      s4_sub: "Onde o trabalho trava e o que poderia rodar sozinho.",
+      s5_title: "Digital & prioridades",
+      s5_sub: "As vitórias de maior alavancagem.",
+      s6_title: "Revisão & envio",
+      s6_sub: "Seu documento preenchido + relatório gerado automaticamente.",
+      reviewHint: "Seu documento preenchido + relatório gerado automaticamente, pronto para enviar.",
+      q1_title: "1. Quais são as suas principais tarefas ou fluxos de trabalho do dia a dia?",
+      q1_ph: "Liste as principais coisas que você faz em um dia típico...",
+      q2_title: "2. Quais aplicativos, softwares, sistemas ou ferramentas você usa atualmente para realizar o seu trabalho?",
+      q2_opt: "Inclua planilhas, sistemas internos, ferramentas de comunicação, sites ou outros aplicativos. Exemplos: Excel, Outlook, Teams, WhatsApp, sistemas de ERP/contabilidade, Google Drive, etc.",
+      q2_ph: "ex.: Excel, Outlook, Teams, SAP, Google Drive...",
+      q3_title: "3. Quais tarefas consomem mais tempo?",
+      q3_ph: "Para onde vai a maior parte do seu tempo?",
+      q4_title: "4. Quais são os maiores problemas ou frustrações no seu fluxo de trabalho atual?",
+      q4_ph: "O que mais te atrasa ou te incomoda?",
+      q5_title: "5. Quais tarefas são repetitivas ou envolvem muito trabalho manual?",
+      q5_ph: "ex.: redigitar dados, copiar entre sistemas, preencher formulários...",
+      q6_title: "6. Você insere as mesmas informações mais de uma vez ou transfere informações manualmente entre diferentes aplicativos, planilhas, e-mails ou sistemas?",
+      yes: "Sim", no: "Não", sometimes: "Às vezes",
+      q6_example_label: "Se sim, por favor dê um exemplo:",
+      q6_example_ph: "ex.: Digito os mesmos detalhes do pedido no portal e no Excel todos os dias...",
+      q7_title: "7. Onde normalmente ocorrem atrasos ou gargalos?",
+      q7_ph: "Onde o trabalho fica travado ou esperando?",
+      q8_title: "8. Se você pudesse automatizar ou simplificar uma tarefa, qual seria?",
+      q8_ph: "A única coisa que você adoraria nunca mais fazer manualmente...",
+      q9_title: "9. Existe algum processo que deveria ser digital ou melhor apoiado pela tecnologia?",
+      q9_ph: "Algum processo em papel, ligação ou etapa manual que poderia ser digital?",
+      q10_title: "10. Qual UMA melhoria faria a maior diferença para o seu departamento?",
+      q10_ph: "Se pudéssemos corrigir apenas uma coisa...",
+      q11_title: "11. Mais alguma coisa que poderia tornar o seu trabalho mais rápido, fácil ou eficiente?",
+      q11_ph: "Algo mais que você gostaria que soubéssemos?",
+      finish: "Concluir e Enviar",
+      back: "Voltar",
+      next: "Avançar",
+      editBtn: "Editar respostas",
+      copyBtn: "Copiar relatório",
+      downloadBtn: "Baixar .txt",
+      insightsTitle: "Insights em tempo real",
+      insightsHint: "Detectado automaticamente conforme você digita — padrões que a equipe vai querer ver.",
+      insightsEmpty: "Comece a digitar… vou sinalizar ferramentas, sinais de dor e oportunidades de automação.",
+      catTools: "Ferramentas detectadas",
+      catPain: "Sinais de dor",
+      catOpp: "Oportunidades de automação",
+      footer: "Sua resposta é enviada à equipe de transformação digital. Obrigado pelo seu tempo.",
+      progress: "{pct}% concluído",
+      sending: "Enviando…",
+      error_required: "Preencha os campos obrigatórios: Departamento, Nome / Cargo e a pergunta 6.",
+      success: "Obrigado! Sua resposta foi enviada.",
+      success_note: "Se esta for a primeira resposta, a equipe receberá um e-mail de ativação do FormSubmit — basta confirmar uma vez e todas as respostas futuras chegarão automaticamente.",
+      error_send: "Ocorreu um erro ao enviar sua resposta. Tente novamente em alguns instantes.",
+      savedToast: "Rascunho restaurado — continue de onde parou.",
+      clearedToast: "Rascunho limpo.",
+      copiedToast: "Relatório copiado para a área de transferência.",
+      countWords: "palavras",
+      kbdHint: "Dica: use ← → para navegar, Ctrl+Enter para continuar",
+      steps: ["Sobre você", "Ferramentas & tempo", "Pontos de dor", "Entrada de dados", "Gargalos", "Prioridades", "Revisão"],
+      r: {
+        title: "RELATÓRIO DA PESQUISA DE FLUXO DE TRABALHO DO DEPARTAMENTO",
+        dept: "Departamento", nameRole: "Nome / Cargo", submitted: "Enviado em",
+        snapshot: "RESUMO RÁPIDO", reenters: "Insere / transfere dados manualmente", example: "Exemplo",
+        repetitive: "Tarefas repetitivas/manuais mencionadas", automCandidate: "Candidata a automação",
+        topImprovement: "Melhoria mais solicitada", biggestFrustration: "Maior frustração",
+        bottleneck: "Local do gargalo", toolsHeader: "FERRAMENTAS EM USO", timeSinksHeader: "PRINCIPAIS CONSUMIDORAS DE TEMPO",
+        digitalizationHeader: "NECESSIDADES DE DIGITALIZAÇÃO", feedbackHeader: "COMENTÁRIOS ADICIONAIS",
+        fullDocHeader: "DOCUMENTO PREENCHIDO COMPLETO", notgiven: "(não informado)", notanswered: "(não respondido)",
+        notlisted: "(não listado)", noneListed: "nenhuma listada", yes: "SIM",
+        questions: [
+          "Principais tarefas/fluxos de trabalho do dia a dia",
+          "Aplicativos, softwares, sistemas ou ferramentas usados",
+          "Tarefas que consomem mais tempo",
+          "Maiores problemas ou frustrações",
+          "Tarefas repetitivas / manuais",
+          "Mesmas informações inseridas mais de uma vez / transferência manual entre sistemas",
+          "Onde normalmente ocorrem atrasos ou gargalos",
+          "Tarefa para automatizar ou simplificar",
+          "Processo que deveria ser digital ou melhor apoiado pela tecnologia",
+          "UMA melhoria que faria a maior diferença",
+          "Mais alguma coisa"
+        ]
+      },
+      insight_terms: {
+        tools: [[/excel/i,'Excel'],[/google sheets/i,'Sheets'],[/google drive/i,'Drive'],[/word/i,'Word'],[/outlook/i,'Outlook'],[/teams/i,'Teams'],[/whatsapp/i,'WhatsApp'],[/slack/i,'Slack'],[/zoom/i,'Zoom'],[/\bsap\b/i,'SAP'],[/\berp\b/i,'ERP'],[/\bcrm\b/i,'CRM'],[/e-?mail/i,'E-mail'],[/drive/i,'Drive']],
+        pain: [[/manual/i,'Trabalho manual'],[/copi|cola/i,'Copiar-colar'],[/digit/i,'Redigitação'],[/duplic/i,'Duplicação'],[/repet/i,'Repetição'],[/lent/i,'Lento'],[/erro/i,'Erros'],[/perd/i,'Info perdida'],[/esper/i,'Espera'],[/aprova/i,'Aprovações']],
+        opp: [[/relat/i,'Relatórios'],[/fatura/i,'Faturamento'],[/lançamento/i,'Lançamento'],[/entrada de dados/i,'Entrada de dados'],[/acompanh/i,'Acompanhamento'],[/agend/i,'Agendamento'],[/rastrei/i,'Rastreamento'],[/ger/i,'Geração'],[/envi/i,'Envio'],[/digit/i,'Digitalização']]
+      }
+    },
+    vi: {
+      title: "Khảo sát Quy trình làm việc & Công nghệ của Phòng ban",
+      subtitle: "Giúp chúng tôi hiểu cách phòng ban của bạn làm việc hiện tại để chúng tôi có thể làm mọi thứ nhanh hơn, đơn giản hơn và bớt thủ công hơn.",
+      resetBtn: "Xóa",
+      resetConfirm: "Xóa tất cả câu trả lời?",
+      autosaveText: "Tự lưu",
+      department: "Phòng ban *",
+      name_role: "Tên / Vai trò *",
+      dept_ph: "ví dụ: Kinh doanh, Nhân sự, Tài chính",
+      name_role_ph: "ví dụ: Maria Gomez — Nhân viên thu mua",
+      s0_title: "Về bạn",
+      s0_sub: "Một vài thông tin cơ bản để chuyển câu trả lời của bạn.",
+      s1_title: "Công cụ & thời gian",
+      s1_sub: "Điều gì vận hành công việc hằng ngày của bạn.",
+      s2_title: "Vấn đề gặp phải",
+      s2_sub: "Điều gì đang gây khó khăn hiện tại.",
+      s3_title: "Nhập liệu",
+      s3_sub: "Tín hiệu của công việc trùng lặp.",
+      s4_title: "Tắc nghẽn & tự động hóa",
+      s4_sub: "Nơi công việc bị kẹt và điều gì có thể tự chạy.",
+      s5_title: "Số hóa & ưu tiên",
+      s5_sub: "Những cải tiến mang lại lợi ích lớn nhất.",
+      s6_title: "Xem lại & gửi",
+      s6_sub: "Tài liệu đã điền + báo cáo tự động tạo.",
+      reviewHint: "Tài liệu đã điền + báo cáo tự động, sẵn sàng để gửi.",
+      q1_title: "1. Các nhiệm vụ hoặc quy trình làm việc hằng ngày chính của bạn là gì?",
+      q1_ph: "Liệt kê những việc chính bạn làm trong một ngày điển hình...",
+      q2_title: "2. Bạn hiện đang sử dụng những ứng dụng, phần mềm, hệ thống hoặc công cụ nào để làm việc?",
+      q2_opt: "Bao gồm bảng tính, hệ thống nội bộ, công cụ giao tiếp, trang web hoặc các ứng dụng khác. Ví dụ: Excel, Outlook, Teams, WhatsApp, hệ thống ERP/kế toán, Google Drive, v.v.",
+      q2_ph: "ví dụ: Excel, Outlook, Teams, SAP, Google Drive...",
+      q3_title: "3. Nhiệm vụ nào tốn nhiều thời gian nhất?",
+      q3_ph: "Phần lớn thời gian của bạn dành cho việc gì?",
+      q4_title: "4. Những vấn đề hoặc điều bực bội lớn nhất trong quy trình làm việc hiện tại của bạn là gì?",
+      q4_ph: "Điều gì làm bạn chậm lại hoặc bực bội nhất?",
+      q5_title: "5. Nhiệm vụ nào mang tính lặp lại hoặc liên quan đến nhiều thao tác thủ công?",
+      q5_ph: "ví dụ: nhập lại dữ liệu, sao chép giữa các hệ thống, điền biểu mẫu...",
+      q6_title: "6. Bạn có nhập cùng một thông tin nhiều lần hoặc chuyển thông tin thủ công giữa các ứng dụng, bảng tính, email hoặc hệ thống khác nhau không?",
+      yes: "Có", no: "Không", sometimes: "Thỉnh thoảng",
+      q6_example_label: "Nếu có, vui lòng đưa ra một ví dụ:",
+      q6_example_ph: "ví dụ: Tôi nhập cùng chi tiết đơn hàng vào cổng web và Excel mỗi ngày...",
+      q7_title: "7. Sự chậm trễ hoặc tắc nghẽn thường xảy ra ở đâu?",
+      q7_ph: "Công việc thường bị kẹt hoặc chờ đợi ở đâu?",
+      q8_title: "8. Nếu bạn có thể tự động hóa hoặc đơn giản hóa một nhiệm vụ, đó sẽ là nhiệm vụ nào?",
+      q8_ph: "Điều duy nhất bạn ước không phải làm thủ công nữa...",
+      q9_title: "9. Có quy trình nào nên được số hóa hoặc được công nghệ hỗ trợ tốt hơn không?",
+      q9_ph: "Có quy trình giấy tờ, cuộc gọi hay bước thủ công nào nên được số hóa không?",
+      q10_title: "10. MỘT cải tiến nào sẽ tạo ra khác biệt lớn nhất cho phòng ban của bạn?",
+      q10_ph: "Nếu chỉ có thể sửa một thứ...",
+      q11_title: "11. Còn điều gì khác có thể giúp công việc của bạn nhanh hơn, dễ dàng hơn hoặc hiệu quả hơn không?",
+      q11_ph: "Có điều gì khác bạn muốn chúng tôi biết không?",
+      finish: "Hoàn tất và Gửi",
+      back: "Quay lại",
+      next: "Tiếp theo",
+      editBtn: "Chỉnh sửa câu trả lời",
+      copyBtn: "Sao chép báo cáo",
+      downloadBtn: "Tải .txt",
+      insightsTitle: "Thông tin trực tiếp",
+      insightsHint: "Tự động phát hiện khi bạn nhập — những điểm nhóm sẽ quan tâm.",
+      insightsEmpty: "Bắt đầu nhập… tôi sẽ nêu các công cụ, tín hiệu khó khăn và cơ hội tự động hóa.",
+      catTools: "Công cụ được phát hiện",
+      catPain: "Tín hiệu khó khăn",
+      catOpp: "Cơ hội tự động hóa",
+      footer: "Phản hồi của bạn được gửi đến nhóm chuyển đổi số. Cảm ơn bạn đã dành thời gian.",
+      progress: "Hoàn thành {pct}%",
+      sending: "Đang gửi…",
+      error_required: "Vui lòng điền các trường bắt buộc: Phòng ban, Tên / Vai trò và câu hỏi 6.",
+      success: "Cảm ơn bạn! Phản hồi của bạn đã được gửi.",
+      success_note: "Nếu đây là phản hồi đầu tiên, nhóm sẽ nhận được email kích hoạt từ FormSubmit — xác nhận một lần và mọi phản hồi sau sẽ tự động đến.",
+      error_send: "Đã xảy ra lỗi khi gửi phản hồi của bạn. Vui lòng thử lại sau vài giây.",
+      savedToast: "Đã khôi phục bản nháp — tiếp tục từ nơi bạn dừng.",
+      clearedToast: "Đã xóa bản nháp.",
+      copiedToast: "Đã sao chép báo cáo vào bộ nhớ tạm.",
+      countWords: "từ",
+      kbdHint: "Mẹo: dùng ← → để điều hướng, Ctrl+Enter để tiếp tục",
+      steps: ["Về bạn", "Công cụ & thời gian", "Vấn đề", "Nhập liệu", "Tắc nghẽn", "Ưu tiên", "Xem lại"],
+      r: {
+        title: "BÁO CÁO KHẢO SÁT QUY TRÌNH LÀM VIỆC CỦA PHÒNG BAN",
+        dept: "Phòng ban", nameRole: "Tên / Vai trò", submitted: "Đã gửi lúc",
+        snapshot: "TÓM TẮT NHANH", reenters: "Nhập / chuyển dữ liệu thủ công", example: "Ví dụ",
+        repetitive: "Có nhắc đến nhiệm vụ lặp lại/thủ công", automCandidate: "Ứng viên tự động hóa",
+        topImprovement: "Cải tiến được yêu cầu nhiều nhất", biggestFrustration: "Điều bực bội lớn nhất",
+        bottleneck: "Nơi xảy ra tắc nghẽn", toolsHeader: "CÔNG CỤ ĐANG SỬ DỤNG", timeSinksHeader: "NHIỆM VỤ TỐN NHIỀU THỜI GIAN NHẤT",
+        digitalizationHeader: "NHU CẦU SỐ HÓA", feedbackHeader: "PHẢN HỒI MỞ",
+        fullDocHeader: "TÀI LIỆU ĐIỀN ĐẦY ĐỦ", notgiven: "(không cung cấp)", notanswered: "(không trả lời)",
+        notlisted: "(không liệt kê)", noneListed: "không có", yes: "CÓ",
+        questions: [
+          "Các nhiệm vụ/quy trình làm việc hằng ngày chính",
+          "Các ứng dụng, phần mềm, hệ thống hoặc công cụ đang sử dụng",
+          "Các nhiệm vụ tốn nhiều thời gian nhất",
+          "Những vấn đề hoặc điều bực bội lớn nhất",
+          "Các nhiệm vụ lặp lại / thủ công",
+          "Nhập cùng thông tin nhiều lần / chuyển thủ công giữa các hệ thống",
+          "Nơi thường xảy ra sự chậm trễ hoặc tắc nghẽn",
+          "Nhiệm vụ cần tự động hóa hoặc đơn giản hóa",
+          "Quy trình nên được số hóa hoặc được công nghệ hỗ trợ tốt hơn",
+          "MỘT cải tiến tạo ra khác biệt lớn nhất",
+          "Điều gì khác"
+        ]
+      },
+      insight_terms: {
+        tools: [[/excel/i,'Excel'],[/google sheets/i,'Sheets'],[/google drive/i,'Drive'],[/word/i,'Word'],[/outlook/i,'Outlook'],[/teams/i,'Teams'],[/whatsapp/i,'WhatsApp'],[/slack/i,'Slack'],[/zoom/i,'Zoom'],[/\bsap\b/i,'SAP'],[/\berp\b/i,'ERP'],[/\bcrm\b/i,'CRM'],[/email/i,'Email'],[/drive/i,'Drive']],
+        pain: [[/thủ công/i,'Thủ công'],[/sao chép|dán/i,'Sao chép-dán'],[/nhập lại/i,'Nhập lại'],[/trùng/i,'Trùng lặp'],[/lặp/i,'Lặp lại'],[/chậm/i,'Chậm'],[/lỗi/i,'Lỗi'],[/mất/i,'Mất dữ liệu'],[/chờ/i,'Chờ đợi'],[/duyệt/i,'Phê duyệt']],
+        opp: [[/báo cáo/i,'Báo cáo'],[/hóa đơn/i,'Hóa đơn'],[/nhập liệu/i,'Nhập liệu'],[/theo dõi/i,'Theo dõi'],[/lịch/i,'Lịch hẹn'],[/gửi/i,'Gửi'],[/số hóa/i,'Số hóa']]
+      }
+    }
+  };
 
-  function updateProgress() {
-    let done = 0;
-    FIELDS.forEach(function (id) {
-      const el = document.getElementById(id);
+  var STEP_COUNT = 7;
+  var TOTAL_FIELDS = 14;
+  var REQUIRED_BY_STEP = { 0: ['department', 'name_role'], 3: ['q6'] };
+  var FIELDS = ['department','name_role','q1','q2','q3','q4','q5','q6','q6_example','q7','q8','q9','q10','q11'];
+  var DRAFT_KEY = 'dept_survey_draft_v2';
+
+  var form = document.getElementById('surveyForm');
+  var backBtn = document.getElementById('backBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var submitBtn = document.getElementById('submitBtn');
+  var statusBox = document.getElementById('statusBox');
+  var stepper = document.getElementById('stepper');
+  var insightsBox = document.getElementById('insights');
+  var insightsCats = document.getElementById('insightsCats');
+  var toastEl = document.getElementById('toast');
+  var langSelect = document.getElementById('langSelect');
+  var resetBtn = document.getElementById('resetBtn');
+  var autosaveHud = document.getElementById('autosaveHud');
+  var globalProgress = document.getElementById('globalProgress');
+  var reviewReport = document.getElementById('reviewReport');
+  var copyBtn = document.getElementById('copyBtn');
+  var downloadBtn = document.getElementById('downloadBtn');
+  var editBtn = document.getElementById('editBtn');
+
+  var currentLang = 'en';
+  var currentStep = 0;
+  var maxVisited = 0;
+  var submitted = false;
+  var saveTimer = null;
+  var insightsTimer = null;
+
+  function t(key) { return I18N[currentLang][key]; }
+
+  // ---- Stepper UI ----
+  function buildStepper() {
+    stepper.innerHTML = '';
+    for (var i = 0; i < STEP_COUNT; i++) {
+      var node = document.createElement('div');
+      node.className = 'step-node';
+      node.dataset.idx = i;
+      node.innerHTML = '<div class="bar"><i></i></div><div class="lbl"></div>';
+      stepper.appendChild(node);
+    }
+    stepper.addEventListener('click', function (e) {
+      var n = e.target.closest('.step-node');
+      if (!n) return;
+      var idx = parseInt(n.dataset.idx, 10);
+      if (idx <= maxVisited) goStep(idx);
+    });
+  }
+  function renderStepper() {
+    var nodes = stepper.children;
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      n.className = 'step-node' + (i < currentStep ? ' done' : '') + (i === currentStep ? ' cur' : '');
+      n.querySelector('.lbl').textContent = I18N[currentLang].steps[i];
+    }
+  }
+
+  // ---- Step navigation ----
+  function stepHasErrors(idx) {
+    var req = REQUIRED_BY_STEP[idx] || [];
+    var missing = [];
+    req.forEach(function (id) {
+      var el = document.getElementById(id);
       if (!el) return;
       if (el.type === 'radio') {
-        const checked = document.querySelector('input[name="' + el.name + '"]:checked');
-        if (checked) done++;
-      } else if (el.value && el.value.trim().length > 0) {
-        done++;
+        if (!document.querySelector('input[name="' + el.name + '"]:checked')) missing.push(el.name);
+      } else if (!el.value.trim()) {
+        missing.push(id);
       }
     });
-    const pct = Math.round((done / FIELDS.length) * 100);
-    fill.style.width = pct + '%';
-    progressText.textContent = pct + '% complete';
+    return missing;
   }
 
-  form.addEventListener('input', updateProgress);
-  form.addEventListener('change', updateProgress);
-  updateProgress();
+  function goStep(idx, opts) {
+    opts = opts || {};
+    if (idx < 0 || idx >= STEP_COUNT) return;
 
-  function getValue(id) {
-    const el = document.getElementById(id);
-    return el ? el.value.trim() : '';
+    var err = stepHasErrors(currentStep);
+    if (err.length > 0 && !opts.force) {
+      statusBox.className = 'status error';
+      statusBox.textContent = t('error_required');
+      return;
+    }
+    statusBox.className = 'status';
+    statusBox.textContent = '';
+
+    if (idx === 6) renderReview();
+
+    currentStep = idx;
+    maxVisited = Math.max(maxVisited, idx);
+    document.querySelectorAll('.step').forEach(function (s) {
+      s.classList.toggle('active', parseInt(s.dataset.step, 10) === idx);
+    });
+
+    var isReview = idx === STEP_COUNT - 1;
+    backBtn.style.display = idx === 0 ? 'none' : 'inline-block';
+    nextBtn.style.display = isReview ? 'none' : 'inline-block';
+    submitBtn.style.display = isReview ? 'inline-block' : 'none';
+    if (isReview) submitBtn.textContent = t('finish');
+
+    insightsBox.classList.toggle('active', idx >= 0 && idx <= 5);
+
+    renderStepper();
+    saveDraft();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  backBtn.addEventListener('click', function () { goStep(currentStep - 1, { force: true }); });
+  nextBtn.addEventListener('click', function () { goStep(currentStep + 1); });
+  editBtn.addEventListener('click', function () { goStep(5, { force: true }); });
+
+  // ---- i18n ----
+  function detectLang() {
+    var saved = null;
+    try { saved = localStorage.getItem('dept_survey_lang'); } catch (e) {}
+    if (saved && I18N[saved]) return saved;
+    var nav = (navigator.language || '').toLowerCase();
+    if (nav.indexOf('pt') === 0) return 'pt';
+    if (nav.indexOf('vi') === 0) return 'vi';
+    return 'en';
+  }
+
+  function applyLang(lang) {
+    currentLang = lang;
+    langSelect.value = lang;
+    try { localStorage.setItem('dept_survey_lang', lang); } catch (e) {}
+    var i18n = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (key && i18n[key] !== undefined) el.textContent = i18n[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      if (key && i18n[key] !== undefined) el.placeholder = i18n[key];
+    });
+    document.querySelectorAll('[data-kbd]').forEach(function (el) {
+      el.innerHTML = i18n.kbdHint;
+    });
+    document.title = i18n.title + ' — CAHUB Auto';
+    renderStepper();
+    updateProgress();
+    renderCounts();
+    refreshInsights();
+  }
+  langSelect.addEventListener('change', function () { applyLang(langSelect.value); });
+
+  // ---- Progress ----
+  function getFieldValue(id) {
+    var el = document.getElementById(id);
+    if (!el) return '';
+    if (el.type === 'radio') return document.querySelector('input[name="' + el.name + '"]:checked') ? 'x' : '';
+    return el.value.trim();
+  }
+  function filledCount() {
+    var n = 0;
+    FIELDS.forEach(function (id) { if (getFieldValue(id)) n++; });
+    return n;
+  }
+  function updateProgress() {
+    var pct = Math.round((filledCount() / TOTAL_FIELDS) * 100);
+    globalProgress.textContent = I18N[currentLang].progress.replace('{pct}', pct);
+  }
+
+  // ---- Counts ----
+  function renderCounts() {
+    FIELDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el || el.type === 'radio') return;
+      var words = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
+      var span = document.getElementById('c_' + id);
+      if (span) span.textContent = words + ' ' + I18N[currentLang].countWords;
+    });
+  }
+
+  // ---- Insights ----
+  function refreshInsights() {
+    var terms = I18N[currentLang].insight_terms;
+    var text = '';
+    FIELDS.forEach(function (id) {
+      if (id === 'q6') return;
+      var el = document.getElementById(id);
+      if (el && el.value) text += ' ' + el.value;
+    });
+    if (!text.trim()) {
+      insightsCats.innerHTML = '<div class="chip-none">' + I18N[currentLang].insightsEmpty + '</div>';
+      return;
+    }
+    var cats = [
+      { key: 'tools', cls: 'tools', label: I18N[currentLang].catTools },
+      { key: 'pain', cls: 'pain', label: I18N[currentLang].catPain },
+      { key: 'opp', cls: 'opp', label: I18N[currentLang].catOpp }
+    ];
+    var html = '';
+    cats.forEach(function (cat) {
+      var found = [];
+      terms[cat.key].forEach(function (pair) {
+        if (pair[0].test(text) && found.indexOf(pair[1]) === -1) found.push(pair[1]);
+      });
+      html += '<div class="cat"><div class="cat-name">' + cat.label + '</div><div class="chip-row">';
+      if (found.length) {
+        found.forEach(function (label) {
+          html += '<span class="chip ' + (cat.cls === 'tools' ? '' : cat.cls) + '">' + label + '</span>';
+        });
+      } else {
+        html += '<span class="chip-none">—</span>';
+      }
+      html += '</div></div>';
+    });
+    insightsCats.innerHTML = html;
+  }
+
+  // ---- Autosave ----
+  function collectDraft() {
+    var d = { lang: currentLang, step: currentStep };
+    FIELDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.type === 'radio') {
+        var checked = document.querySelector('input[name="' + el.name + '"]:checked');
+        d[id] = checked ? checked.value : '';
+      } else if (el) {
+        d[id] = el.value;
+      }
+    });
+    return d;
+  }
+  function saveDraft() {
+    if (submitted) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
+        autosaveHud.className = 'autosave on';
+      } catch (e) {}
+    }, 300);
+  }
+  function restoreDraft() {
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      FIELDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el || d[id] === undefined) return;
+        if (el.type === 'radio') {
+          var rb = document.querySelector('input[name="' + el.name + '"][value="' + d[id] + '"]');
+          if (rb) rb.checked = true;
+        } else {
+          el.value = d[id];
+        }
+      });
+      if (d.lang && I18N[d.lang]) applyLang(d.lang);
+      if (typeof d.step === 'number' && d.step > 0 && d.step <= 5) currentStep = d.step;
+      maxVisited = Math.max(maxVisited, currentStep);
+      showToast(I18N[currentLang].savedToast);
+    } catch (e) {}
+  }
+
+  // ---- Toast ----
+  var toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 3200);
+  }
+
+  // ---- Reset ----
+  resetBtn.addEventListener('click', function () {
+    if (!confirm(I18N[currentLang].resetConfirm || 'Reset all answers?')) return;
+    form.reset();
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    currentStep = 0; maxVisited = 0;
+    goStep(0, { force: true });
+    statusBox.className = 'status';
+    showToast(I18N[currentLang].clearedToast);
+  });
+
+  // ---- Review + report ----
+  function collectData() {
+    return {
+      department: getFieldValue('department'),
+      name_role: getFieldValue('name_role'),
+      q1: getFieldValue('q1'), q2: getFieldValue('q2'), q3: getFieldValue('q3'),
+      q4: getFieldValue('q4'), q5: getFieldValue('q5'),
+      q6: (document.querySelector('input[name="q6"]:checked') || {}).value || '',
+      q6_example: getFieldValue('q6_example'),
+      q7: getFieldValue('q7'), q8: getFieldValue('q8'), q9: getFieldValue('q9'),
+      q10: getFieldValue('q10'), q11: getFieldValue('q11')
+    };
+  }
   function truncate(s, n) {
     s = (s || '').replace(/\s+/g, ' ').trim();
     return s.length > n ? s.slice(0, n - 1) + '…' : s;
   }
-
-  function buildReport(data) {
-    const lines = [];
+  function buildReport(data, lang) {
+    var r = I18N[lang].r;
+    var q = r.questions;
+    var answers = [data.q1, data.q2, data.q3, data.q4, data.q5, data.q6 + (data.q6_example ? ' — ' + data.q6_example : ''), data.q7, data.q8, data.q9, data.q10, data.q11];
+    var lines = [];
     lines.push('========================================');
-    lines.push('  DEPARTMENT WORKFLOW SURVEY REPORT');
+    lines.push('  ' + r.title);
     lines.push('========================================');
-    lines.push('Department:  ' + (data.department || '(not given)'));
-    lines.push('Name / Role: ' + (data.name_role || '(not given)'));
-    lines.push('Submitted:   ' + new Date().toLocaleString());
+    lines.push(r.dept + ':  ' + (data.department || r.notgiven));
+    lines.push(r.nameRole + ': ' + (data.name_role || r.notgiven));
+    lines.push(r.submitted + ':   ' + new Date().toLocaleString());
     lines.push('');
-    lines.push('--- QUICK SNAPSHOT ---');
-    lines.push('• Re-enters / manually moves data: ' + (data.q6 || '(not answered)'));
-    if (data.q6_example) lines.push('    Example: ' + truncate(data.q6_example, 160));
-    lines.push('• Repetitive/manual tasks mentioned: ' + (data.q5 ? 'YES' : 'none listed'));
-    lines.push('• Automation candidate: ' + (data.q8 ? truncate(data.q8, 140) : '(none listed)'));
-    lines.push('• Top improvement request: ' + (data.q10 ? truncate(data.q10, 140) : '(none listed)'));
-    lines.push('• Biggest frustration: ' + (data.q4 ? truncate(data.q4, 140) : '(none listed)'));
-    lines.push('• Bottleneck location: ' + (data.q7 ? truncate(data.q7, 140) : '(none listed)'));
+    lines.push('--- ' + r.snapshot + ' ---');
+    lines.push('• ' + r.reenters + ': ' + (data.q6 || r.notanswered));
+    if (data.q6_example) lines.push('    ' + r.example + ': ' + truncate(data.q6_example, 160));
+    lines.push('• ' + r.repetitive + ': ' + (data.q5 ? r.yes : r.noneListed));
+    lines.push('• ' + r.automCandidate + ': ' + (data.q8 ? truncate(data.q8, 140) : '(' + r.noneListed + ')'));
+    lines.push('• ' + r.topImprovement + ': ' + (data.q10 ? truncate(data.q10, 140) : '(' + r.noneListed + ')'));
+    lines.push('• ' + r.biggestFrustration + ': ' + (data.q4 ? truncate(data.q4, 140) : '(' + r.noneListed + ')'));
+    lines.push('• ' + r.bottleneck + ': ' + (data.q7 ? truncate(data.q7, 140) : '(' + r.noneListed + ')'));
     lines.push('');
-    lines.push('--- TOOLS IN USE ---');
-    lines.push(data.q2 ? data.q2 : '(not listed)');
+    lines.push('--- ' + r.toolsHeader + ' ---');
+    lines.push(data.q2 ? data.q2 : r.notlisted);
     lines.push('');
-    lines.push('--- TOP TIME SINKS ---');
-    lines.push(data.q3 ? data.q3 : '(not listed)');
+    lines.push('--- ' + r.timeSinksHeader + ' ---');
+    lines.push(data.q3 ? data.q3 : r.notlisted);
     lines.push('');
-    lines.push('--- DIGITALIZATION NEEDS ---');
-    lines.push(data.q9 ? data.q9 : '(not listed)');
+    lines.push('--- ' + r.digitalizationHeader + ' ---');
+    lines.push(data.q9 ? data.q9 : r.notlisted);
     lines.push('');
-    lines.push('--- OPEN FEEDBACK ---');
-    lines.push(data.q11 ? data.q11 : '(not listed)');
+    lines.push('--- ' + r.feedbackHeader + ' ---');
+    lines.push(data.q11 ? data.q11 : r.notlisted);
     lines.push('');
-    lines.push('--- FULL FILLED DOCUMENT ---');
-    lines.push('1. Main day-to-day tasks/workflows:');
-    lines.push('   ' + (data.q1 || '(not answered)'));
-    lines.push('');
-    lines.push('2. Apps, software, systems or tools used:');
-    lines.push('   ' + (data.q2 || '(not answered)'));
-    lines.push('');
-    lines.push('3. Tasks that take the most time:');
-    lines.push('   ' + (data.q3 || '(not answered)'));
-    lines.push('');
-    lines.push('4. Biggest problems or frustrations:');
-    lines.push('   ' + (data.q4 || '(not answered)'));
-    lines.push('');
-    lines.push('5. Repetitive / manual tasks:');
-    lines.push('   ' + (data.q5 || '(not answered)'));
-    lines.push('');
-    lines.push('6. Same info entered more than once / manual transfer between systems: ' + (data.q6 || '(not answered)'));
-    lines.push('   Example: ' + (data.q6_example || '(none given)'));
-    lines.push('');
-    lines.push('7. Where delays or bottlenecks usually happen:');
-    lines.push('   ' + (data.q7 || '(not answered)'));
-    lines.push('');
-    lines.push('8. Task to automate or simplify:');
-    lines.push('   ' + (data.q8 || '(not answered)'));
-    lines.push('');
-    lines.push('9. Process that should be digital or better supported by technology:');
-    lines.push('   ' + (data.q9 || '(not answered)'));
-    lines.push('');
-    lines.push('10. ONE improvement that would make the biggest difference:');
-    lines.push('    ' + (data.q10 || '(not answered)'));
-    lines.push('');
-    lines.push('11. Anything else:');
-    lines.push('    ' + (data.q11 || '(not answered)'));
+    lines.push('--- ' + r.fullDocHeader + ' ---');
+    for (var i = 0; i < 11; i++) {
+      lines.push((i + 1) + '. ' + q[i] + ':');
+      lines.push('   ' + (answers[i] || r.notanswered));
+      lines.push('');
+    }
     return lines.join('\n');
   }
+  function renderReview() {
+    reviewReport.value = buildReport(collectData(), currentLang);
+    if (submitted) reviewReport.value = '';
+  }
 
+  // ---- Copy / Download ----
+  copyBtn.addEventListener('click', function () {
+    var text = reviewReport.value || buildReport(collectData(), currentLang);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast(I18N[currentLang].copiedToast);
+      });
+    } else {
+      reviewReport.select();
+      document.execCommand('copy');
+      showToast(I18N[currentLang].copiedToast);
+    }
+  });
+  downloadBtn.addEventListener('click', function () {
+    var text = reviewReport.value || buildReport(collectData(), currentLang);
+    var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'survey-' + (getFieldValue('department').replace(/\s+/g, '-').toLowerCase() || 'response') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  });
+
+  // ---- Keyboard ----
+  document.addEventListener('keydown', function (e) {
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    var isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (currentStep === STEP_COUNT - 1) form.requestSubmit();
+      else goStep(currentStep + 1);
+      return;
+    }
+    if (isInput) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); goStep(currentStep + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(currentStep - 1, { force: true }); }
+  });
+
+  // ---- Submit ----
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-
-    const data = {
-      department: getValue('department'),
-      name_role: getValue('name_role'),
-      q1: getValue('q1'), q2: getValue('q2'), q3: getValue('q3'),
-      q4: getValue('q4'), q5: getValue('q5'),
-      q6: (document.querySelector('input[name="q6"]:checked') || {}).value || '',
-      q6_example: getValue('q6_example'),
-      q7: getValue('q7'), q8: getValue('q8'), q9: getValue('q9'),
-      q10: getValue('q10'), q11: getValue('q11')
-    };
+    var data = collectData();
 
     if (!data.department || !data.name_role || !data.q6) {
       statusBox.className = 'status error';
-      statusBox.textContent = 'Please complete the required fields: Department, Name / Role, and Question 6.';
+      statusBox.textContent = t('error_required');
       return;
     }
 
-    const report = buildReport(data);
+    var lang = currentLang;
+    var report = buildReport(data, lang);
 
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
+    submitBtn.disabled = true;
+    submitBtn.textContent = t('sending');
     statusBox.className = 'status';
 
-    const payload = new FormData();
-    payload.append('_subject', 'Dept Survey: ' + data.department + ' — ' + data.name_role);
+    var payload = new FormData();
+    payload.append('_subject', 'Dept Survey [' + lang.toUpperCase() + ']: ' + data.department + ' — ' + data.name_role);
     payload.append('Department', data.department);
     payload.append('Name / Role', data.name_role);
     payload.append('Q1. Main tasks', data.q1);
@@ -338,9 +1141,17 @@
       .then(function (res) { return res.json(); })
       .then(function (json) {
         if (json && json.success === 'true') {
+          submitted = true;
+          try { localStorage.removeItem(DRAFT_KEY); } catch (err) {}
           statusBox.className = 'status success';
-          statusBox.innerHTML = '<strong>Thank you! Your response has been sent.</strong><br>If this is the first submission, the team will receive an activation email from FormSubmit — they\'ll confirm once and all future responses arrive automatically.';
-          form.style.display = 'none';
+          statusBox.innerHTML = '<div class="check-big">✓</div><div style="text-align:center"><strong>' + t('success') + '</strong><br><br>' + t('success_note') + '</div>';
+          form.querySelectorAll('.step').forEach(function (s) { s.classList.remove('active'); });
+          document.querySelector('.step[data-step="6"]').classList.add('active');
+          document.getElementById('stepper').style.display = 'none';
+          backBtn.style.display = 'none';
+          nextBtn.style.display = 'none';
+          submitBtn.style.display = 'none';
+          insightsBox.classList.remove('active');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           throw new Error('Submission failed');
@@ -348,11 +1159,34 @@
       })
       .catch(function () {
         statusBox.className = 'status error';
-        statusBox.textContent = 'Something went wrong sending your response. Please try again in a moment.';
-        btn.disabled = false;
-        btn.textContent = 'Finish & Submit';
+        statusBox.textContent = t('error_send');
+        submitBtn.disabled = false;
+        submitBtn.textContent = t('finish');
       });
   });
+
+  // ---- Input tracking ----
+  form.addEventListener('input', function () {
+    updateProgress();
+    renderCounts();
+    refreshInsights();
+    autosaveHud.className = 'autosave off';
+    saveDraft();
+  });
+  form.addEventListener('change', function () {
+    updateProgress();
+    refreshInsights();
+    autosaveHud.className = 'autosave off';
+    saveDraft();
+  });
+
+  // ---- Init ----
+  buildStepper();
+  applyLang(detectLang());
+  restoreDraft();
+  goStep(currentStep, { force: true });
+  renderStepper();
+  updateProgress();
 })();
 </script>
 </body>
