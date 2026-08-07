@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Department Workflow &amp; Technology Survey</title>
+<style>
+  :root {
+    --primary: #1a4b84;
+    --primary-dark: #12345e;
+    --accent: #2e9e6b;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #d7dce3;
+    --danger: #b3261e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  header.hero {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 28px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(18,52,94,.25);
+  }
+  header.hero h1 { font-size: 1.45rem; margin-bottom: 6px; letter-spacing: .3px; }
+  header.hero p { font-size: .95rem; opacity: .92; }
+  .badge {
+    display: inline-block; background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.35); border-radius: 999px;
+    padding: 2px 10px; font-size: .75rem; margin-bottom: 12px;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px; margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1.05rem; color: var(--primary); margin-bottom: 10px; }
+  label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .95rem; }
+  label .opt { font-weight: 400; color: var(--muted); font-size: .82rem; display: block; margin-top: 2px; }
+  input[type="text"], input[type="email"], textarea {
+    width: 100%; padding: 10px 12px; font-size: .95rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: #fbfcfe; font-family: inherit; color: var(--text);
+  }
+  input:focus, textarea:focus {
+    outline: 2px solid rgba(26,75,132,.4); border-color: var(--primary);
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+  .radio-group { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+  .radio-group label { display: flex; align-items: center; gap: 7px; font-weight: 500; font-size: .92rem; margin: 0; cursor: pointer; }
+  .radio-group input[type="radio"] { accent-color: var(--primary); width: 17px; height: 17px; }
+  .hint { font-size: .82rem; color: var(--muted); margin-top: 4px; }
+  .req { color: var(--danger); }
+  .progress-wrap { margin-bottom: 22px; }
+  .progress-bar { height: 8px; background: #e3e8ef; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width .3s ease; border-radius: 999px; }
+  .progress-text { font-size: .8rem; color: var(--muted); margin-top: 6px; text-align: right; }
+  button[type="submit"] {
+    display: block; width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 700;
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    cursor: pointer; letter-spacing: .3px; box-shadow: 0 3px 10px rgba(46,158,107,.35);
+  }
+  button[type="submit"]:hover { background: #268a5c; }
+  button[type="submit"]:disabled { background: #9fb9ad; cursor: not-allowed; box-shadow: none; }
+  .status { margin-top: 14px; padding: 12px 14px; border-radius: 8px; display: none; font-size: .92rem; }
+  .status.success { display: block; background: #e6f4ec; color: #155c3a; border: 1px solid #b7dfc8; }
+  .status.error { display: block; background: #fdecea; color: #8c1d18; border: 1px solid #f5c6c0; }
+  footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 28px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="badge">CAHUB Auto</span>
+    <h1>Department Workflow &amp; Technology Survey</h1>
+    <p>Help us understand how your department works today so we can make things faster, simpler, and less manual.</p>
+  </header>
+
+  <form id="surveyForm" novalidate>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0% complete</div>
+    </div>
+
+    <div class="card">
+      <div class="two">
+        <div>
+          <label for="department">Department <span class="req">*</span></label>
+          <input type="text" id="department" name="department" required placeholder="e.g. Sales, HR, Finance">
+        </div>
+        <div>
+          <label for="name_role">Name / Role <span class="req">*</span></label>
+          <input type="text" id="name_role" name="name_role" required placeholder="e.g. Maria Gomez — Buyer">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>1. What are your main day-to-day tasks or workflows?</h2>
+      <textarea name="q1" id="q1" placeholder="List the main things you do on a typical day..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>2. What apps, software, systems, or tools do you currently use to do your work?</h2>
+      <label class="opt">Include spreadsheets, internal systems, communication tools, websites, or other applications. Examples: Excel, Outlook, Teams, WhatsApp, ERP/accounting systems, Google Drive, etc.</label>
+      <textarea name="q2" id="q2" placeholder="e.g. Excel, Outlook, Teams, SAP, Google Drive..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>3. Which tasks take the most time?</h2>
+      <textarea name="q3" id="q3" placeholder="Where does most of your time go?"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>4. What are the biggest problems or frustrations in your current workflow?</h2>
+      <textarea name="q4" id="q4" placeholder="What slows you down or annoys you most?"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>5. Which tasks are repetitive or involve a lot of manual work?</h2>
+      <textarea name="q5" id="q5" placeholder="e.g. re-typing data, copying between systems, filling forms..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>6. Do you enter the same information more than once or manually move information between different apps, spreadsheets, emails, or systems?</h2>
+      <div class="radio-group" id="q6group">
+        <label><input type="radio" name="q6" value="Yes" required> Yes</label>
+        <label><input type="radio" name="q6" value="No"> No</label>
+        <label><input type="radio" name="q6" value="Sometimes"> Sometimes</label>
+      </div>
+      <div class="hint">If yes, please give an example:</div>
+      <textarea name="q6_example" id="q6_example" placeholder="e.g. I type the same order details into both the web portal and Excel every day..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>7. Where do delays or bottlenecks usually happen?</h2>
+      <textarea name="q7" id="q7" placeholder="Where does work get stuck or wait?"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>8. If you could automate or simplify one task, what would it be?</h2>
+      <textarea name="q8" id="q8" placeholder="The one thing you'd love to never do by hand again..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>9. Is there any process that should be digital or better supported by technology?</h2>
+      <textarea name="q9" id="q9" placeholder="Any paper process, phone call, or manual step that could be digital?"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>10. What ONE improvement would make the biggest difference to your department?</h2>
+      <textarea name="q10" id="q10" placeholder="If we could only fix one thing..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>11. Anything else that could make your work faster, easier, or more efficient?</h2>
+      <textarea name="q11" id="q11" placeholder="Anything else you'd like us to know?"></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">Finish &amp; Submit</button>
+    <div class="status" id="statusBox"></div>
+  </form>
+
+  <footer>Your response is sent to the digital transformation team. Thank you for your time.</footer>
+</div>
+
+<script>
+(function () {
+  const form = document.getElementById('surveyForm');
+  const btn = document.getElementById('submitBtn');
+  const statusBox = document.getElementById('statusBox');
+  const fill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+
+  const FIELDS = ['department','name_role','q1','q2','q3','q4','q5','q6','q6_example','q7','q8','q9','q10','q11'];
+
+  function updateProgress() {
+    let done = 0;
+    FIELDS.forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'radio') {
+        const checked = document.querySelector('input[name="' + el.name + '"]:checked');
+        if (checked) done++;
+      } else if (el.value && el.value.trim().length > 0) {
+        done++;
+      }
+    });
+    const pct = Math.round((done / FIELDS.length) * 100);
+    fill.style.width = pct + '%';
+    progressText.textContent = pct + '% complete';
+  }
+
+  form.addEventListener('input', updateProgress);
+  form.addEventListener('change', updateProgress);
+  updateProgress();
+
+  function getValue(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function truncate(s, n) {
+    s = (s || '').replace(/\s+/g, ' ').trim();
+    return s.length > n ? s.slice(0, n - 1) + '…' : s;
+  }
+
+  function buildReport(data) {
+    const lines = [];
+    lines.push('========================================');
+    lines.push('  DEPARTMENT WORKFLOW SURVEY REPORT');
+    lines.push('========================================');
+    lines.push('Department:  ' + (data.department || '(not given)'));
+    lines.push('Name / Role: ' + (data.name_role || '(not given)'));
+    lines.push('Submitted:   ' + new Date().toLocaleString());
+    lines.push('');
+    lines.push('--- QUICK SNAPSHOT ---');
+    lines.push('• Re-enters / manually moves data: ' + (data.q6 || '(not answered)'));
+    if (data.q6_example) lines.push('    Example: ' + truncate(data.q6_example, 160));
+    lines.push('• Repetitive/manual tasks mentioned: ' + (data.q5 ? 'YES' : 'none listed'));
+    lines.push('• Automation candidate: ' + (data.q8 ? truncate(data.q8, 140) : '(none listed)'));
+    lines.push('• Top improvement request: ' + (data.q10 ? truncate(data.q10, 140) : '(none listed)'));
+    lines.push('• Biggest frustration: ' + (data.q4 ? truncate(data.q4, 140) : '(none listed)'));
+    lines.push('• Bottleneck location: ' + (data.q7 ? truncate(data.q7, 140) : '(none listed)'));
+    lines.push('');
+    lines.push('--- TOOLS IN USE ---');
+    lines.push(data.q2 ? data.q2 : '(not listed)');
+    lines.push('');
+    lines.push('--- TOP TIME SINKS ---');
+    lines.push(data.q3 ? data.q3 : '(not listed)');
+    lines.push('');
+    lines.push('--- DIGITALIZATION NEEDS ---');
+    lines.push(data.q9 ? data.q9 : '(not listed)');
+    lines.push('');
+    lines.push('--- OPEN FEEDBACK ---');
+    lines.push(data.q11 ? data.q11 : '(not listed)');
+    lines.push('');
+    lines.push('--- FULL FILLED DOCUMENT ---');
+    lines.push('1. Main day-to-day tasks/workflows:');
+    lines.push('   ' + (data.q1 || '(not answered)'));
+    lines.push('');
+    lines.push('2. Apps, software, systems or tools used:');
+    lines.push('   ' + (data.q2 || '(not answered)'));
+    lines.push('');
+    lines.push('3. Tasks that take the most time:');
+    lines.push('   ' + (data.q3 || '(not answered)'));
+    lines.push('');
+    lines.push('4. Biggest problems or frustrations:');
+    lines.push('   ' + (data.q4 || '(not answered)'));
+    lines.push('');
+    lines.push('5. Repetitive / manual tasks:');
+    lines.push('   ' + (data.q5 || '(not answered)'));
+    lines.push('');
+    lines.push('6. Same info entered more than once / manual transfer between systems: ' + (data.q6 || '(not answered)'));
+    lines.push('   Example: ' + (data.q6_example || '(none given)'));
+    lines.push('');
+    lines.push('7. Where delays or bottlenecks usually happen:');
+    lines.push('   ' + (data.q7 || '(not answered)'));
+    lines.push('');
+    lines.push('8. Task to automate or simplify:');
+    lines.push('   ' + (data.q8 || '(not answered)'));
+    lines.push('');
+    lines.push('9. Process that should be digital or better supported by technology:');
+    lines.push('   ' + (data.q9 || '(not answered)'));
+    lines.push('');
+    lines.push('10. ONE improvement that would make the biggest difference:');
+    lines.push('    ' + (data.q10 || '(not answered)'));
+    lines.push('');
+    lines.push('11. Anything else:');
+    lines.push('    ' + (data.q11 || '(not answered)'));
+    return lines.join('\n');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const data = {
+      department: getValue('department'),
+      name_role: getValue('name_role'),
+      q1: getValue('q1'), q2: getValue('q2'), q3: getValue('q3'),
+      q4: getValue('q4'), q5: getValue('q5'),
+      q6: (document.querySelector('input[name="q6"]:checked') || {}).value || '',
+      q6_example: getValue('q6_example'),
+      q7: getValue('q7'), q8: getValue('q8'), q9: getValue('q9'),
+      q10: getValue('q10'), q11: getValue('q11')
+    };
+
+    if (!data.department || !data.name_role || !data.q6) {
+      statusBox.className = 'status error';
+      statusBox.textContent = 'Please complete the required fields: Department, Name / Role, and Question 6.';
+      return;
+    }
+
+    const report = buildReport(data);
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    statusBox.className = 'status';
+
+    const payload = new FormData();
+    payload.append('_subject', 'Dept Survey: ' + data.department + ' — ' + data.name_role);
+    payload.append('Department', data.department);
+    payload.append('Name / Role', data.name_role);
+    payload.append('Q1. Main tasks', data.q1);
+    payload.append('Q2. Tools used', data.q2);
+    payload.append('Q3. Most time-consuming', data.q3);
+    payload.append('Q4. Problems/frustrations', data.q4);
+    payload.append('Q5. Repetitive/manual tasks', data.q5);
+    payload.append('Q6. Duplicate entry', data.q6);
+    payload.append('Q6 example', data.q6_example);
+    payload.append('Q7. Delays/bottlenecks', data.q7);
+    payload.append('Q8. Task to automate', data.q8);
+    payload.append('Q9. Should be digital', data.q9);
+    payload.append('Q10. Biggest improvement', data.q10);
+    payload.append('Q11. Anything else', data.q11);
+    payload.append('FILLED DOCUMENT + REPORT SUMMARY', report);
+
+    fetch('https://formsubmit.co/ajax/xavier.lucas@cahubauto.com', {
+      method: 'POST',
+      body: payload
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (json) {
+        if (json && json.success === 'true') {
+          statusBox.className = 'status success';
+          statusBox.innerHTML = '<strong>Thank you! Your response has been sent.</strong><br>If this is the first submission, the team will receive an activation email from FormSubmit — they\'ll confirm once and all future responses arrive automatically.';
+          form.style.display = 'none';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          throw new Error('Submission failed');
+        }
+      })
+      .catch(function () {
+        statusBox.className = 'status error';
+        statusBox.textContent = 'Something went wrong sending your response. Please try again in a moment.';
+        btn.disabled = false;
+        btn.textContent = 'Finish & Submit';
+      });
+  });
+})();
+</script>
+</body>
+</html>
